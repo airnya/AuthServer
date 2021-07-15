@@ -1,6 +1,5 @@
 ﻿using AuthServer.Models;
 using AuthServer.Repo;
-using AuthServer.Responses;
 using AuthServer.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
