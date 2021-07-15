@@ -9,10 +9,10 @@ namespace AuthServer.Validators
 {
     public class UserValidator : AbstractValidator<User>
     {
-        public UserValidator()
+        public UserValidator( )
         {
             RuleFor(user => user.NickName).NotEmpty().Length(6, 20);
-            RuleFor(user => user.Password).NotEmpty().Length(8, 20);
+            RuleFor(user => user.Password).NotEmpty().Length(8, 20).Matches(@"[0-9]+");
         }
     }
 }

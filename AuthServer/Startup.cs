@@ -1,3 +1,4 @@
+using AuthServer.Repo;
 using AuthServer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +16,7 @@ namespace AuthServer
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup( IConfiguration configuration ) 
         {
             Configuration = configuration;
         }
@@ -23,27 +24,30 @@ namespace AuthServer
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices( IServiceCollection services )
         {
-            services.AddControllers();
-            services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddControllers( );
+            services.AddTransient<IUserService, UserService>( );
+            services.AddSingleton<IUserRepository, UserRepository>( );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure( IApplicationBuilder app, IWebHostEnvironment env )
         {
-            if (env.IsDevelopment())
+            if ( env.IsDevelopment( ) )
             {
-                app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage( );
             }
+ 
+            app.UseMiddleware<ErrorHandlerMiddleware>( );
 
-            app.UseRouting();
+            app.UseRouting( );
 
-            app.UseAuthorization();
+            app.UseAuthorization( );
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers( );
             });
         }
     }

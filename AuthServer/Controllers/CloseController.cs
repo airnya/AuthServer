@@ -1,5 +1,5 @@
 ﻿using AuthServer.Models;
-using AuthServer.Responses;
+using AuthServer.Repo;
 using AuthServer.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -19,13 +19,6 @@ namespace AuthServer.Controllers
         public CloseController( IUserRepository userRepository )
         {
             _userRepository = userRepository;
-        }
-
-        [HttpPost]
-        public BaseResponse Get( )
-        {
-
-            return BaseResponse.Ok;
         }
     }
 }

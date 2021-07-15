@@ -1,4 +1,5 @@
 ﻿using AuthServer.Models;
+using AuthServer.Repo;
 using AuthServer.Responses;
 using AuthServer.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,27 +18,23 @@ namespace AuthServer.Controllers
     public class SignUpController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
 
-        public SignUpController( IUserRepository userRepository )
+        public SignUpController( IUserRepository userRepository, 
+            IUserService userService )
         {
             _userRepository = userRepository;
+            _userService = userService;
         }
 
         [HttpPost]
         [Route("{user_id}")]
-        public HttpResponseMessage CreateUser( string user_id, 
-            [FromBody]User userDto  )
+        public User CreateUser( string user_id, [FromBody]User userDto  )
         {
-            if ( string.IsNullOrEmpty( user_id ) || string.IsNullOrEmpty( userDto.Password ) )
-                return new HttpResponseMessage( HttpStatusCode.BadRequest ) { Content = new StringContent( "required user_id and password" ) };
-
-            var user = new User( userDto.Password );
+            var user = new User( ) { UserId = user_id, Password = userDto.Password };
             var newUser = _userRepository.CreateUser( user_id, user );
 
-            if ( newUser == null )
-                return new HttpResponseMessage( HttpStatusCode.BadRequest ) { Content = new StringContent( "already same user_id is used" ) };
-            else
-                return new HttpResponseMessage( HttpStatusCode.OK ) { Content = new StringContent( newUser.ToString( ) ) };
+            return newUser;
         }
     }
 }
