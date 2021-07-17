@@ -3,16 +3,17 @@ using AuthServer.Repo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace AuthServer.Services
 {
-    public interface IUserService 
+    public interface ILoginService 
     {
-        bool IsAuthorized( string login, string password );
+        bool IsAuthorized( string encoded, string userId = null );
     };
 
-    public class UserService : IUserService
+    public class UserService : ILoginService
     {
         private readonly IUserRepository _userRepository;
 
@@ -21,12 +22,22 @@ namespace AuthServer.Services
             _userRepository = userRepository;
         }
 
-        public bool IsAuthorized( string login, string password )
+        public bool IsAuthorized( string encoded, string userId = null )
         {
-            if ( string.IsNullOrEmpty( login ) || string.IsNullOrEmpty( password ) )
-                throw new AuthException( "Login and password is required" );
+            if ( string.IsNullOrEmpty( encoded ) )
+                throw new AuthException("Authentication Faild");
 
-            var userExist = _userRepository.IsUserExist( login, password );
+            var credentialBytes = Convert.FromBase64String( encoded );
+            var credentials = Encoding.UTF8.GetString( credentialBytes ).Split (new[] { ':' }, 2 );
+            var ( login, password ) = ( credentials[0], credentials[1] );
+
+            if ( string.IsNullOrEmpty( login ) || string.IsNullOrEmpty( password ) )
+                throw new AuthException( "Authentication Faild" );
+
+            if ( !string.IsNullOrEmpty( userId ) && userId != login )
+                throw new AuthException( "No Permission for Update" );
+
+            var userExist = _userRepository.IsUserExist( login , password );
 
             return userExist ? true : throw new AuthException( "Not authorized" );
         }

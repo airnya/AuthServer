@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace AuthServer.Controllers
@@ -19,11 +20,11 @@ namespace AuthServer.Controllers
     public class UsersController : Controller
     {
         private readonly IUserRepository _userRepository;
-        private readonly IUserService _userService;
-        public UsersController( IUserRepository userRepository, IUserService userService )
+        private readonly ILoginService _loginService;
+        public UsersController( IUserRepository userRepository, ILoginService userService )
         {
             _userRepository = userRepository;
-            _userService = userService;
+            _loginService = userService;
         }
 
         [HttpGet]
@@ -33,14 +34,14 @@ namespace AuthServer.Controllers
 
         [HttpPatch]
         [Route( "{user_id}" )]
-        public User PatchUser( [FromHeader] string login, [FromHeader] string password, 
-            string user_id, [FromBody] User userDto )
+        public IActionResult PatchUser( string user_id, [FromBody] User userDto )
         {
-            _userService.IsAuthorized( login, password );
-
-            var user = _userRepository.GetUser( user_id );
-            user = userDto; // method to convert userDto = user
-            return user;
+            AuthenticationHeaderValue.TryParse( Request.Headers["Authorization"], out var authHeader );
+            _loginService.IsAuthorized( authHeader?.Scheme, user_id );
+            var user = userDto; // TODO: method to convert userDto = user
+             _userRepository.UpdateUser( user_id, user );
+            
+            return Ok( "User successfully updated" );
         }
     }
 }

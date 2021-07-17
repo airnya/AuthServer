@@ -27,7 +27,7 @@ namespace AuthServer
         public void ConfigureServices( IServiceCollection services )
         {
             services.AddControllers( );
-            services.AddTransient<IUserService, UserService>( );
+            services.AddTransient<ILoginService, UserService>( );
             services.AddSingleton<IUserRepository, UserRepository>( );
         }
 

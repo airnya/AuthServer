@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace AuthServer.Controllers
@@ -17,13 +19,10 @@ namespace AuthServer.Controllers
     public class SignUpController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
-        private readonly IUserService _userService;
 
-        public SignUpController( IUserRepository userRepository, 
-            IUserService userService )
+        public SignUpController( IUserRepository userRepository )
         {
             _userRepository = userRepository;
-            _userService = userService;
         }
 
         [HttpPost]
